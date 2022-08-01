@@ -1,0 +1,10 @@
+app:
+  name: 'youtube-downloader-rest'
+  version: '1.0.0'
+
+http:
+  port: '8081'
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'youtube-downloader-rest'

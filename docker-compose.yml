@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    container_name: yd-rest
+    image: app
+    ports:
+      - 8081:8081

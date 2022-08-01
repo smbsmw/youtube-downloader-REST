@@ -1,0 +1,47 @@
+info:
+  contact: {}
+  description: This is a sample server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Youtube Download REST
+  version: "1.0"
+paths:
+  /v1/api/download:
+    get:
+      consumes:
+      - application/json
+      description: Download video
+      operationId: download
+      parameters:
+      - description: URL of youtube video
+        in: query
+        name: url
+        required: true
+        type: string
+      - description: Itag of youtube video
+        in: query
+        name: itag
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Download video
+  /v1/api/info:
+    post:
+      consumes:
+      - application/json
+      description: Get information of video
+      operationId: get-info
+      parameters:
+      - description: URL of youtube video
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get video info
+swagger: "2.0"

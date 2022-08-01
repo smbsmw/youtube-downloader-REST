@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <title>Youtube Downloader</title>
+    <style type="text/css">
+        td {
+            padding: 0 15px;
+            vertical-align: top;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <v-app>
+        <v-container fill-height v-cloak>
+            <v-row justify="center" align="center">
+                <v-col cols="12" xl="6" sm="10">
+                    <v-card>
+                        <v-card-title class="justify-center">
+                            <h1 class="ma-2">Youtube Downloader</h1>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-text-field v-model="url" @input="getInfo" label="URL" outlined>
+                                <template v-slot:append>
+                                    <v-progress-circular
+                                            v-if="loading"
+                                            indeterminate
+                                            color="primary"
+                                    ></v-progress-circular>
+                                </template>
+                            </v-text-field>
+
+                            <table v-if="info.title">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <img :src="info.thumbnails">
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <v-btn class="mr-1 mb-1"
+                                                   v-for="f in info.format_list"
+                                                   @click="download(f.itag)"
+                                                   outlined
+                                                   small
+                                            > {{ f.quality }}
+                                            </v-btn>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Title</td>
+                                    <td>{{ info.title }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td>{{ info.description }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Author</td>
+                                    <td>{{ info.author }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-app>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+<script>
+    new Vue({
+        data: () => {
+            return {
+                loading: false,
+                error: null,
+                url: "",
+                info: {}
+            }
+        },
+        methods: {
+            getInfo() {
+                if (!this.url) {
+                    return
+                }
+
+                this.info = {}
+                this.loading = true
+                fetch('/v1/api/info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: this.url})
+                })
+                .then(r => r.json())
+                .then(r => {
+                    this.info = r
+                }).catch(e => {
+                    console.log(e)
+                }).finally(() => {
+                    this.loading = false
+                })
+            },
+            download(itag) {
+                const a = document.createElement('a');
+                a.href = '/v1/api/download?' + new URLSearchParams({
+                    url: this.url,
+                    itag: itag
+                });
+                a.click();
+            }
+        },
+        el: '#app',
+        vuetify: new Vuetify({
+            theme: {
+                dark: true,
+            }
+        }),
+    })
+</script>
+</body>
+</html>
